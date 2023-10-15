@@ -1,14 +1,10 @@
 /*
             SORE MANAGEMENT SYSTEM
 This program manage's the sale recoreds and purchases of a store
-    Author Name                 ID
-  1.Tebibu Solomon           2308/14
-  2.Abate  Agegnehu          0004/14
-  3.Abel   Habtamu           2801/14
-  4.Tebibu Solomon          2309/14
-  5.Abay   Asheber          0093/14
-
+    Author name    
+Abate  Agegnehu       
 */
+
 #include <iostream>
 #include <cstring>
 #include <iomanip>
