@@ -1,0 +1,641 @@
+/*
+            SORE MANAGEMENT SYSTEM
+This program manage's the sale recoreds and purchases of a store
+    Author Name                 ID
+  1.Tebibu Solomon           2308/14
+  2.Abate  Agegnehu          0004/14
+  3.Abel   Habtamu           2801/14
+  4.Tebibu Solomon          2309/14
+  5.Abay   Asheber          0093/14
+
+*/
+#include <iostream>
+#include <cstring>
+#include <iomanip>
+#include<fstream>
+using namespace std;
+float administorAccountBalanece = 0;
+class Store
+{
+public:
+    string storeName;
+    string storeType;
+    void formating()
+    {
+        cout << setfill('-');
+        cout << setw(50) << " " << endl;
+    }
+    Store()
+    {
+        cout << setfill('-');
+        cout << "|" << setw(49) << "|" << endl;
+        cout << "|       WELLCOME TO STORE MANAGMENT SYSTEM       |" << endl;
+        cout << "|" << setw(49) << "|" << endl;
+        cout << "\nplease enter store name: ";
+        getline(cin, storeName);
+        cout << "please enter stroe type: ";
+        getline(cin, storeType);
+        cout << setfill('*');
+        cout << setw(24) << "THIS IS " << storeName << "'s   " << storeType << " STORE" << setw(15) << '*' << endl;
+    }
+};
+class Administer
+{
+private:
+    string firstName;
+    string lastName;
+    string adminId;
+    string firstNameHold;
+    string lastNameHold;
+    string adminIdHold;
+
+public:
+    double adminAccountNumber;
+    void adminRegister();
+    bool adminCheck(string, string, string);
+    bool adminCheck();
+    friend bool ckeck();
+};
+class User
+{
+private:
+    string firstName;
+    string lastName;
+    int phoneNumber;
+    string userId;
+
+public:
+    double userAccountNumber;
+    float userAcoountBalance = 0;
+    void save(User*,int);
+    void open(User*,int);
+    void userChargeBalance(User *, int, int);
+    void userRegister();
+    void displayUserInfo();
+    bool userCheck(User *, int);
+    bool userCheck(User *, int, string, string, string);
+};
+
+class Stock
+{
+private:
+    string stockName;
+    string stockType;
+    int stockQuantity;
+    float stockPrice;
+
+public:
+    void purchase(Stock *, Administer, User *, int, int, string, string, int);
+    void stockRegister();
+    void stockDisplay();
+    void stockDrop(Stock *, int, string, string, int);
+};
+
+// This function register administer of store
+void Administer::adminRegister()
+{
+
+    cout << "First name: ";
+    getline(cin, firstName);
+    firstNameHold = firstName;
+    cout << "Last name: ";
+    getline(cin, lastName);
+    lastNameHold = lastName;
+    cout << "Administer Account Number:";
+    cin >> adminAccountNumber;
+    adminId = firstName + "@" + lastName;
+    cout << "Your ID: ";
+    cout << adminId << endl;
+    adminIdHold = adminId;
+}
+// This function(with parameter) checks whether administer or not
+bool Administer::adminCheck(string firstName, string lastName, string id)
+{
+    if (firstName == firstNameHold && lastName == lastNameHold && adminIdHold == id)
+        return true;
+}
+
+// This function(with out parameter) checks whether administer or not
+bool Administer::adminCheck()
+{
+
+    cout << "First name: ";
+    getline(cin, firstName);
+    cout << "Last name: ";
+    getline(cin, lastName);
+    cout << "ID: ";
+    getline(cin, adminId);
+    if (firstName == firstNameHold && lastName == lastNameHold && adminId == adminIdHold)
+        return true;
+}
+// This function register users of the store
+void User::userRegister()
+{
+
+    cout << "First name: ";
+    getline(cin, firstName);
+    cout << "Last name: ";
+    getline(cin, lastName);
+    cout << "User Account Number: ";
+    cin >> userAccountNumber;
+    cout << "ID: ";
+    getline(cin, userId);
+    cin.ignore();
+    cout << "Phone Number: ";
+    cin >> phoneNumber;
+}
+// This function display user information for adinimister
+void User::displayUserInfo()
+{
+    cout << "First Name: ";
+    cout << firstName << endl;
+    cout << "Last Name: ";
+    cout << lastName << endl;
+    cout << "Phone Number: +251" << phoneNumber << endl;
+}
+void User::save(User*user,int size)
+{
+    ofstream UserInfo("User.txt");
+    if(UserInfo.is_open())
+    {
+        for(int i = 0; i < size; i++)
+        {
+            UserInfo << user[i].firstName <<" "<< user[i].lastName <<" "<< user[i].phoneNumber <<endl; 
+        }
+    }
+}
+void User::open(User* user,int size)
+{
+    ifstream UserInfo("User.txt");
+    if(UserInfo.is_open())
+    {
+        for(int i = 0; i < size; i++)
+        {
+            UserInfo >> user[i].firstName >> user[i].lastName >> user[i].phoneNumber; 
+        }
+    }
+}
+
+
+// This function checks whether user or not as an argument take User class object and User size
+bool User::userCheck(User *user, int userSize)
+{
+
+    cout << "First name: ";
+    getline(cin, firstName);
+    cout << "Last name: ";
+    getline(cin, lastName);
+    cout << "ID: ";
+    getline(cin, userId);
+
+    for (int i = 0; i < userSize; i++)
+    {
+        if (firstName == user[i].firstName && lastName == user[i].lastName && userId == user[i].userId)
+            return true;
+    }
+}
+/*This function chech whether user or not as an argument take User class object
+user size ,firsName,lastName,id*/
+bool User::userCheck(User *user, int size, string firstName, string lastName, string id)
+{
+    for (int i = 0; i < size; i++)
+    {
+        if (user[i].firstName == firstName && user[i].lastName == lastName && user[i].userId == id)
+        {
+            return true;
+        }
+    }
+}
+// This class inherited with User  and Aminister Class
+class CheckUserOrAdminister : public User, public Administer
+{
+private:
+    string firstName;
+    string lastName;
+    string sex;
+    string adminId;
+
+public:
+    bool check1;
+    bool check2;
+    // Thise function check wether user or administer
+    bool checkUserOrAdminister(User *user, int userSize)
+    {
+        string id;
+        cout << "First name: ";
+        getline(cin, firstName);
+        cout << "Last name: ";
+        getline(cin, lastName);
+        cout << "ID: ";
+        getline(cin, id);
+        check1 = adminCheck(firstName, lastName, id);
+        check2 = userCheck(user, userSize, firstName, lastName, id);
+        if (check1 || check2)
+            return true;
+    }
+};
+
+// This function allow users to charge their balance before start purchases
+void User::userChargeBalance(User *user, int account, int size)
+{
+    int press;
+    float balance;
+    for (int i = 0; i < size; i++)
+    {
+        if (account == user[i].userAccountNumber)
+        {
+            cout << "Enter amount you want to deposit: ";
+            cin >> balance;
+            cout << "1.to continue:";
+            cin >> press;
+            if (press == 1)
+            {
+                user[i].userAcoountBalance = balance;
+                cout << "You have succefully deposited " << balance << " to your account" << endl;
+                break;
+            }
+            else
+            {
+                cout << "Invalid" << endl;
+                break;
+            }
+        }
+    }
+}
+// This function register stocks
+void Stock::stockRegister()
+{
+    cout << "Name: ";
+    getline(cin, stockName);
+    cout << "Type: ";
+    getline(cin, stockType);
+    cout << "Quantity: ";
+    cin >> stockQuantity;
+    cout << "Price: ";
+    cin >> stockPrice;
+}
+// This function display stocks information
+void Stock::stockDisplay()
+{
+    cout << "Name: ";
+    cout << stockName << endl;
+    cout << "Type: ";
+    cout << stockType << endl;
+    cout << "Quantity: ";
+    cout << stockQuantity << endl;
+    cout << "Price: ";
+    cout << stockPrice << endl;
+}
+// This function allow administer to drop stocks partially or fully
+void Stock::stockDrop(Stock *stock, int stockSize, string stockName, string stockType, int stockQuantity)
+{
+    for (int i = 0; i < stockSize; i++)
+    {
+        if (stock[i].stockName == stockName && stock[i].stockType == stockType && stock[i].stockQuantity == stockQuantity)
+        {
+            stock[i].stockName = " ";
+            stock[i].stockType = "  ";
+            stock[i].stockQuantity = 0;
+            stock[i].stockPrice = 0;
+            cout << "The stock is completely dropped " << endl;
+        }
+        else if (stock[i].stockName == stockName && stock[i].stockType == stockType && stock[i].stockQuantity > stockQuantity)
+        {
+            stock[i].stockName = stock[i].stockName;
+            stock[i].stockType = stock[i].stockType;
+            stock[i].stockQuantity -= stockQuantity;
+            stock[i].stockPrice = stock[i].stockPrice;
+            cout << "The quantity of stock is reduced by :" << stockQuantity << endl;
+        }
+
+        else if (stock[i].stockName != stockName || stock[i].stockType != stockType)
+        {
+            cout << "Enter valid information about stocks " << endl;
+        }
+    }
+}
+// This function allow users to purchases stocks from available stock lists
+void Stock::purchase(Stock *stock, Administer administer, User *user, int userSize, int size, string name, string type, int quantity)
+{
+    float balance, bill;
+    int i, press;
+    double accountUser, accountAdmin;
+    for (i = 0; i < size; i++)
+    {
+        if (name == stock[i].stockName && type == stock[i].stockType)
+        {
+            if (stock[i].stockQuantity >= quantity)
+            {
+
+                bill = stock[i].stockPrice * quantity;
+                cout << "The total price is: " << bill << endl;
+                cout << setfill('-');
+                cout << setw(50);
+                break;
+            }
+            if (stock[i].stockQuantity < quantity)
+            {
+                cout << "There is no available quantity of stock you ask" << endl;
+            }
+        }
+    }
+    if (name != stock[i].stockName || type != stock[i].stockType)
+    {
+        cout << "The stock is unavailabile" << endl;
+        goto end;
+    }
+    cout << "\n1. To countinue purchase: ";
+    cin >> press;
+    if (press == 1)
+    {
+        cout << "Enter your account:";
+        cin >> accountUser;
+        for (int i = 0; i < userSize; i++)
+        {
+            if (accountUser == user[i].userAccountNumber)
+            {
+
+                cout << "The administer account is: " << administer.adminAccountNumber << endl;
+                cout << "Enter adminster account:";
+                cin >> accountAdmin;
+                if (accountAdmin == administer.adminAccountNumber)
+                {
+                    cout << "Complete payment:";
+                    cin >> balance;
+                    if (user[i].userAcoountBalance < bill)
+                    {
+                        throw "Your balance is insufficient to complete the purchase";
+                    }
+                    else
+                    {
+                        if (balance == bill)
+                        {
+                            user[i].userAcoountBalance -= bill;
+                            administorAccountBalanece += bill;
+                            cout << "Your current balance is: " << user[i].userAcoountBalance << endl;
+                            if (stock[i].stockQuantity == quantity)
+                            {
+                                stock[i].stockName = " ";
+                                stock[i].stockType = " ";
+                                stock[i].stockQuantity = 0;
+                                stock[i].stockPrice = 0;
+                            }
+                            else
+                            {
+                                stock[i].stockQuantity -= quantity;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    cout << "Invalid adminster account" << endl;
+                }
+            }
+        }
+    }
+end:
+    int last = 0;
+}
+
+int main()
+{
+
+    string stockName, stockType;
+    int stockQuantity;
+    Administer administer;
+    User *user;
+    Stock *stock;
+    CheckUserOrAdminister check;
+
+    int userSize, stockSize, option;
+    Store store;
+option:
+    store.formating();
+    cout << "\n            MENU LISTS" << endl;
+    store.formating();
+    cout << "1.Administer register" << endl;
+    cout << "2. User register" << endl;
+    cout << "3. See user information" << endl;
+    cout << "4. Stock register" << endl;
+    cout << "5. Stock display" << endl;
+    cout << "6.Stock drop" << endl;
+    cout << "7.Purchases" << endl;
+    cout << "8.User balance charge" << endl;
+    cout << "9.Check adiminister balance" << endl;
+    cout << "Option: ";
+    cin >> option;
+    switch (option)
+    {
+    case 1:
+        system("cls");
+        cout << "\nFill the information you are requested below correctly" << endl;
+        store.formating();
+        cin.ignore();
+        administer.adminRegister();
+        goto option;
+        break;
+    case 2:
+        system("cls");
+        cout << "Enter your valid admin information to register users" << endl;
+        store.formating();
+        cin.ignore();
+        if (administer.adminCheck())
+        {
+            store.formating();
+            cout << "How many user you want to register: ";
+            cin >> userSize;
+            user->save(user,userSize);
+            user->open(user,userSize);
+            user = new User[userSize];
+            int i;
+            for (i = 0; i < userSize; i++)
+
+            {
+                cin.ignore();
+                cout << setfill(' ');
+                cout << setw(20) << "User" << i + 1 << endl;
+                user[i].userRegister();
+                cin.ignore();
+            }
+            system("cls");
+            cout << "You have successfully registered " << i << " user" << endl;
+
+            cout << endl;
+        }
+        else
+            cout << "Please enter admin valid information" << endl;
+        goto option;
+    case 3:
+        system("cls");
+        cout << "Enter your valid admin information to see user information" << endl;
+        store.formating();
+        cin.ignore();
+        if (administer.adminCheck())
+        {
+            store.formating();
+            for (int j = 0; j < userSize; j++)
+            {
+                cout << "User" << j + 1 << endl;
+
+                user[j].displayUserInfo();
+            }
+        }
+        else
+        {
+            system("cls");
+            cout << "Please enter valid information" << endl;
+            goto option;
+        }
+        goto option;
+        break;
+    case 4:
+        system("cls");
+        cout << "Enter your valid admin information to register stocks" << endl;
+        store.formating();
+        cin.ignore();
+        if (administer.adminCheck())
+        {
+            store.formating();
+            cout << "How many stock you want to register: ";
+            cin >> stockSize;
+            stock = new Stock[stockSize];
+            int i;
+            for (i = 0; i < stockSize; i++)
+            {
+                cin.ignore();
+                cout << "Stock" << i + 1 << endl;
+                stock[i].stockRegister();
+            }
+            system("cls");
+            cout << "You have successfully registered " << i << " stock" << endl;
+        }
+        else
+        {
+            system("cls");
+            cout << "Please enter valid information" << endl;
+            goto option;
+        }
+        goto option;
+        break;
+    case 5:
+        system("cls");
+        cout << "Enter your valid admin or user information to see stocks" << endl;
+        cin.ignore();
+        if (check.checkUserOrAdminister(user, userSize))
+
+        {
+            store.formating();
+            for (int j = 0; j < stockSize; j++)
+            {
+                cout << setfill(' ');
+                cout << setw(20) << "Stock" << j + 1 << endl;
+                stock[j].stockDisplay();
+            }
+        }
+        else
+        {
+            system("cls");
+            cout << "Please enter valid information" << endl;
+            goto option;
+        }
+        goto option;
+        break;
+    case 6:
+        system("cls");
+        cin.ignore();
+        cout << "Enter your valid admin information to drop stocks" << endl;
+        store.formating();
+        if (administer.adminCheck())
+        {
+            store.formating();
+            cout << "Available stock lists" << endl;
+            for (int i = 0; i < stockSize; i++)
+            {
+                cout << "Stock " << (i + 1) << endl;
+                stock[i].stockDisplay();
+                cout << endl
+                     << endl;
+            }
+            store.formating();
+            cout << "Enter the stock information you want to drop" << endl;
+            cout << "Name: ";
+            getline(cin, stockName);
+            cout << "Type: ";
+            getline(cin, stockType);
+            cout << "Quantity: ";
+            cin >> stockQuantity;
+            cin.ignore();
+            stock->stockDrop(stock, stockSize, stockName, stockType, stockQuantity);
+
+            goto option;
+        }
+        goto option;
+        break;
+    case 7:
+        system("cls");
+        cout << "Enter your valid user information to buy stocks" << endl;
+        store.formating();
+        cin.ignore();
+        try
+        {
+
+            if (user->userCheck(user, userSize))
+            {
+                store.formating();
+                cout << "              Available stock lists" << endl;
+                store.formating();
+                for (int j = 0; j < stockSize; j++)
+                {
+                    cout << setfill(' ');
+                    cout << setw(20) << "Stock" << j + 1 << endl;
+                    stock[j].stockDisplay();
+                }
+                store.formating();
+                cout << "Enter your prefer purchase" << endl;
+                cout << "Name: ";
+                getline(cin, stockName);
+                cout << "Type: ";
+                getline(cin, stockType);
+                cout << "Quantity: ";
+                cin >> stockQuantity;
+                system("cls");
+                stock->purchase(stock, administer, user, userSize, stockSize, stockName, stockType, stockQuantity);
+            }
+            else
+            {
+                cout << "Invalid" << endl;
+
+                goto option;
+            }
+        }
+        catch (const char *x)
+        {
+            cout << x << endl;
+        }
+        catch (...)
+        {
+            cout << "Un expected error" << endl;
+        }
+        goto option;
+        break;
+    case 8:
+        system("cls");
+        int account;
+        cout << "Enter your account:";
+        cin >> account;
+        user->userChargeBalance(user, account, userSize);
+
+        goto option;
+        break;
+    case 9:
+        system("cls");
+        cout << "Your balance is: " << administorAccountBalanece << endl;
+        goto option;
+        break;
+
+    default:
+        cout << "Invalid" << endl;
+    }
+    return 0;
+}
