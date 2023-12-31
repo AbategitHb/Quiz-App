@@ -47,6 +47,7 @@ int main(){
         for(int j=0;j<questions[i].numberOfChoices;j++){
             cout<<(j+1)<<") "<<questions[i].choices[j]<<endl;
         }
+           // my edit
         cout<<"your answer: ";
         cin>>answer;
         if(questions[i].isCorrect(answer)){
